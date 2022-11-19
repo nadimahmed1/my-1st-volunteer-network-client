@@ -8,6 +8,7 @@ import { useState } from 'react';
 const auth = getAuth(app)
 
 function App() {
+  const [error, setError] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const handleEmailBlur = (event) => {
@@ -17,6 +18,15 @@ function App() {
     setPassword(event.target.value);
   }
   const handleFormSubmit = event => {
+    event.preventDefault();
+    if (!/(?=.*[a-zA-Z >>!#$%&? "<<])[a-zA-Z0-9 >>!#$%&?<< ]/.test(password)) {
+      setError('Please use a One special character')
+      return;
+    }
+    else {
+      setError('');
+    }
+
     createUserWithEmailAndPassword(auth, email, password)
       .then(result => {
         const user = result.user;
@@ -25,8 +35,11 @@ function App() {
       .catch(error => {
         console.error(error)
       })
-    event.preventDefault();
+
   }
+
+
+
   return (
     <div className="App">
 
@@ -35,7 +48,7 @@ function App() {
         <Form onSubmit={handleFormSubmit}>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email address</Form.Label>
-            <Form.Control onBlur={handleEmailBlur} type="email" placeholder="Enter email" />
+            <Form.Control onBlur={handleEmailBlur} type="email" placeholder="Enter email" required />
             <Form.Text className="text-muted">
               We'll never share your email with anyone else.
             </Form.Text>
@@ -43,10 +56,12 @@ function App() {
 
           <Form.Group className="mb-3" controlId="formBasicPassword">
             <Form.Label>Password</Form.Label>
-            <Form.Control onBlur={handlePasswordBlur} type="password" placeholder="Password" />
+            <Form.Control onBlur={handlePasswordBlur} type="password" placeholder="Password" required />
+            <p className='text-danger'>{error}</p>
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicCheckbox">
             <Form.Check type="checkbox" label="Check me out" />
+
           </Form.Group>
           <Button variant="primary" type="submit">
             Submit
